@@ -12,7 +12,7 @@ export default function Blog() {
       </header>
 
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Exemple d'article */}
+        {/* articulo */}
         <Card>
           <CardHeader>
             <CardTitle>Découverte de FastAPI</CardTitle>
@@ -24,7 +24,7 @@ export default function Blog() {
           </CardContent>
         </Card>
 
-        {/* Autres articles */}
+        {/* otros articulos */}
         <Card>
           <CardHeader>
             <CardTitle>Introduction à React</CardTitle>
