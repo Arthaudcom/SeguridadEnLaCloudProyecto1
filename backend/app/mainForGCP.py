@@ -1,7 +1,9 @@
 from fastapi import FastAPI
-from app.database import Base, engine
+from app.database import Base, engine, wait_for_db
 from app.models import *  
 from app.routes import posts, users, tags, ratings
+
+wait_for_db()
 
 print("Creacion de las tablas en la base de datos")
 Base.metadata.create_all(bind=engine)

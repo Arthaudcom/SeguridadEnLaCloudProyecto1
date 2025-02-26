@@ -1,16 +1,21 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "sqlite:///./blog.db"  # Cambiar a PostgreSQL 
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+if DATABASE_URL:
+    engine = create_engine(DATABASE_URL)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    Base = declarative_base()
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    def get_db():
+        db = SessionLocal()
+        try:
+            yield db
+        finally:
+            db.close()
+else:
+    def get_db():
+        raise Exception("Database is not configured. Set DATABASE_URL environment variable.")

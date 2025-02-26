@@ -1,17 +1,21 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Blog from "./pages/Blog";
 import Login from "./pages/Login";
+import PostDetail from "./pages/PostDetail";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useAuth } from "./context/AuthContext";
 
 export default function AppRoutes() {
+  const { isAuthenticated } = useAuth();
+
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public route */}
-        <Route path="/login" element={<Login />} />
+        {/* Redirection si déjà connecté */}
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
 
-        {/* Protected routes */}
+        {/* Routes protégées */}
         <Route
           path="/"
           element={
@@ -28,7 +32,11 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
+        <Route path="/posts/:id" element={<PostDetail />} />
       </Routes>
     </BrowserRouter>
   );
 }
+
+
+

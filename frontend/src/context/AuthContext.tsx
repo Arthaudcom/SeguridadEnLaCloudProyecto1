@@ -3,9 +3,9 @@ import { jwtDecode, JwtPayload } from "jwt-decode";
 
 interface AuthContextType {
   user: string | null; 
-  token: string | null; // JWT token
-  login: (token: string) => void; 
-  logout: () => void; 
+  token: string | null; 
+  login: (token: string) => void;
+  logout: () => void;
   isAuthenticated: boolean;
 }
 
@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (storedToken) {
       setToken(storedToken);
       const decodedToken = jwtDecode<JwtPayload & { username: string }>(storedToken);
-      setUser(decodedToken.username); 
+      setUser(decodedToken.username);
     }
   }, []);
 
