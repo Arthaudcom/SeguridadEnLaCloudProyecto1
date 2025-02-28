@@ -29,7 +29,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: "postgresql://user:password@db:5432/mydatabase"
+      DATABASE_URL: "postgresql://postgres:postgres@35.238.5.109:5432/blog_database"
     ports:
       - "8000:8000"
     networks:
