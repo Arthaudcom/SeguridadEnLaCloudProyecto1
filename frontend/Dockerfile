@@ -8,7 +8,7 @@ COPY package.json package-lock.json ./
 RUN npm install --frozen-lockfile
 
 # Copiar el resto del código fuente
-COPY . .
+COPY . /app
 
 # Compilar la aplicación con Vite
 RUN npm run build
