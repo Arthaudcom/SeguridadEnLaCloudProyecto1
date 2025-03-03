@@ -31,14 +31,14 @@ export default function PostPage() {
   const [postId, setPostId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Charger les posts et tags existants
+  // Cargar las publicaciones y etiquetas al cargar la página
   useEffect(() => {
     loadPosts();
     loadTags();
   }, [currentPage]);
 
   const loadPosts = async () => {
-    const data = await getPosts(currentPage, 10); // 10 posts par page
+    const data = await getPosts(currentPage, 10); // 10 posts por página
     const updatedPosts = await Promise.all(
       data.map(async (post: Post) => ({
         ...post,
@@ -133,7 +133,7 @@ export default function PostPage() {
         <Button onClick={handleFilterByTag} className="bg-blue-500 hover:bg-blue-600">Filtrar</Button>
       </div>
 
-      {/* Liste des publications */}
+      {/* Lista de las publicaciones */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {posts.map((post) => (
           <Card key={post.id}>
@@ -153,7 +153,7 @@ export default function PostPage() {
                 <Button onClick={() => setPostId(post.id)} className="bg-yellow-500 hover:bg-yellow-600">Editar</Button>
                 <Button onClick={() => handleTogglePublish(post.id, post.is_published)}
                   className={post.is_published ? "bg-gray-500 hover:bg-gray-600" : "bg-green-500 hover:bg-green-600"}>
-                  {post.is_published ? "Dépublier" : "Publicar"}
+                  {post.is_published ? "Depublicar" : "Publicar"}
                 </Button>
                 <Button onClick={() => handleDeletePost(post.id)} className="bg-red-500 hover:bg-red-600">Eliminar</Button>
               </div>

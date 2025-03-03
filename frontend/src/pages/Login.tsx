@@ -16,7 +16,7 @@ const Login = () => {
   const [isRecovering, setIsRecovering] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Connexion
+  // Connecion del usuario
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -33,7 +33,7 @@ const Login = () => {
     }
   };
 
-  // Enregistrement d'un nouvel utilisateur
+  // inscripcion del usuario
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -51,7 +51,7 @@ const Login = () => {
     }
   };
 
-  // Récupération du mot de passe
+  // Recuperación de contraseña
   const handleRecoverPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -81,7 +81,7 @@ const Login = () => {
           {error && <p className="text-red-500 text-sm text-center">{error}</p>}
           {successMessage && <p className="text-green-500 text-sm text-center">{successMessage}</p>}
 
-          {/* Formulaire d'inscription */}
+          {/* Formulario de inscripcion */}
           {isRegistering ? (
             <form onSubmit={handleRegister} className="space-y-4">
               <div>
@@ -128,7 +128,6 @@ const Login = () => {
               </p>
             </form>
           ) : isRecovering ? (
-            // Formulaire de récupération de mot de passe
             <form onSubmit={handleRecoverPassword} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
@@ -152,7 +151,6 @@ const Login = () => {
               </p>
             </form>
           ) : (
-            // Formulaire de connexion
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>

@@ -15,7 +15,7 @@ def create_post(
     authorization: str = Header(None),
     db: Session = Depends(get_db)
 ):
-    # Vérifier le token
+    # Verificar el token
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Token de autenticación requerido")
     token = authorization.split(" ")[1]
@@ -23,12 +23,12 @@ def create_post(
     if not payload:
         raise HTTPException(status_code=401, detail="Token inválido o expirado")
 
-    # Retrouver l'utilisateur
+    # Verificar si el usuario existe
     user = db.query(User).filter(User.email == payload["sub"]).first()
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    # Gérer la liste de tags reçus sous forme de noms
+    # Administrar la lista de etiquetas recibidas como nombres
     tag_objects = []
     for tag_name in post.tags:
         existing_tag = db.query(Tag).filter(Tag.name == tag_name).first()
@@ -83,7 +83,7 @@ def update_post(
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    # On retrouve le post qui correspond à l'auteur
+    # Buscar la publicación por ID y autor
     post_db = db.query(Post).filter(
         Post.id == post_id, 
         Post.author_id == user.id
@@ -92,7 +92,7 @@ def update_post(
     if not post_db:
         raise HTTPException(status_code=404, detail="Publicación no encontrada o no tienes permisos")
 
-    # Mettre à jour les champs un par un
+    # Actualizar los campos si se proporcionan
     if post_data.title is not None:
         post_db.title = post_data.title
 
@@ -105,7 +105,6 @@ def update_post(
     if post_data.published_at is not None:
         post_db.published_at = post_data.published_at
 
-    # S’il y a un tableau de tags, on met à jour
     if post_data.tags is not None:
         tag_objects = []
         for tag_name in post_data.tags:
@@ -120,7 +119,6 @@ def update_post(
                 tag_objects.append(new_tag)
         post_db.tags = tag_objects
 
-    # S’il y a is_published
     if post_data.is_published is not None:
         post_db.is_published = post_data.is_published
 
@@ -158,7 +156,6 @@ def get_posts(page: int = 1, page_size: int = 10, db: Session = Depends(get_db))
     offset = (page - 1) * page_size
     posts_db = db.query(Post).filter(Post.is_published == True).offset(offset).limit(page_size).all()
 
-    # Construire un PostResponse pour chaque post
     responses = []
     for p in posts_db:
         responses.append(
@@ -181,13 +178,12 @@ def get_post(post_id: int, db: Session = Depends(get_db)):
     if not post_db:
         raise HTTPException(status_code=404, detail="Publicación no encontrada")
 
-    # Construire un PostResponse en extrayant les données voulues
     response = PostResponse(
         id=post_db.id,
         title=post_db.title,
         content=post_db.content,
         author=post_db.author or "",
-        published_at=post_db.published_at or post_db.created_at,  # Au choix
+        published_at=post_db.published_at or post_db.created_at,
         is_published=post_db.is_published,
         tags=[tag.name for tag in post_db.tags]
     )
@@ -202,7 +198,7 @@ def get_posts_by_tag(tag_id: int, db: Session = Depends(get_db)):
         .filter(Tag.id == tag_id, Post.is_published == True)
         .all()
     )
-    # Retourner une liste de PostResponse
+
     responses = []
     for p in posts_db:
         responses.append(

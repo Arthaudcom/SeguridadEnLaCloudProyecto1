@@ -9,7 +9,7 @@ export async function registerUser(userData: User) {
 
 export async function loginUser(email: string, password: string) {
   const formData = new URLSearchParams();
-  formData.append("username", email);  // OAuth2 expects 'username' instead of 'email'
+  formData.append("username", email);
   formData.append("password", password);
 
   const response = await api.post("/users/login", formData, {

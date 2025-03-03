@@ -11,10 +11,10 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Redirection si déjà connecté */}
+        {/* Redirecion si conectado */}
         <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
 
-        {/* Routes protégées */}
+        {/* Rutas protegidas */}
         <Route
           path="/"
           element={
