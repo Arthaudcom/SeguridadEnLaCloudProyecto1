@@ -17,19 +17,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
+
     if (storedToken) {
-      setToken(storedToken);
-      const decodedToken = jwtDecode<JwtPayload & { username: string }>(storedToken);
-      setUser(decodedToken.username);
+      const decodedToken = jwtDecode<JwtPayload & { exp: number; username: string }>(storedToken);
+    
+      const isExpired = decodedToken.exp * 1000 < Date.now();
+      if (!isExpired) {
+        setToken(storedToken);
+        setUser(decodedToken.username);
+      } else {
+        console.log("Token expired, logging out...");
+        logout();
+      }
     }
+    
   }, []);
 
   const login = (token: string) => {
+    const decodedToken = jwtDecode<JwtPayload & { exp: number; username: string }>(token);
+  
+    // Check expiration
+    if (decodedToken.exp * 1000 < Date.now()) {
+      console.log("Token is already expired!");
+      return;
+    }
+  
     localStorage.setItem("token", token);
-    const decodedToken = jwtDecode<JwtPayload & { username: string }>(token);
     setUser(decodedToken.username);
     setToken(token);
   };
+  
 
   const logout = () => {
     localStorage.removeItem("token");

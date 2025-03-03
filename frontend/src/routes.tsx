@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Home from "./pages/Home";
 import Blog from "./pages/Blog";
 import Login from "./pages/Login";
 import PostDetail from "./pages/PostDetail";
@@ -20,7 +19,7 @@ export default function AppRoutes() {
           path="/"
           element={
             <ProtectedRoute>
-              <Home />
+              <Blog />
             </ProtectedRoute>
           }
         />

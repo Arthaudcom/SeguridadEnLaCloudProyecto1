@@ -7,17 +7,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
+import { Tag } from "../services/types";
 
 interface Post {
   id: string;
   title: string;
   content: string;
   author: string;
-  publishedAt: string;
-  created_at: string;
+  published_at: string;
   tags: string[];
   rating?: number;
-  isPublished: boolean;
+  is_published: boolean;
 }
 
 export default function PostPage() {
@@ -26,7 +26,7 @@ export default function PostPage() {
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
   const [tags, setTags] = useState<string[]>([]);
-  const [allTags, setAllTags] = useState<string[]>([]);
+  const [allTags, setAllTags] = useState<Tag[]>([]);
   const [selectedTag, setSelectedTag] = useState("");
   const [postId, setPostId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,7 +43,7 @@ export default function PostPage() {
       data.map(async (post: Post) => ({
         ...post,
         rating: await getAverageRating(post.id),
-        isPublished: post.isPublished ?? false, 
+        is_published: post.is_published ?? false,
       }))
     );
     setPosts(updatedPosts);
@@ -54,16 +54,17 @@ export default function PostPage() {
     setAllTags(data);
   };
 
+
   const handleCreatePost = async () => {
-    const newPost = await createPost({ 
-      title, 
-      content, 
-      author, 
-      publishedAt: new Date().toISOString(),
+    const newPost = await createPost({
+      title,
+      content,
+      author,
+      published_at: new Date().toISOString(),
       tags,
-      isPublished: true
+      is_published: true
     });
-  
+
     if (tags.length > 0) {
       await assignTagsToPost(newPost.id, tags);
     }
@@ -93,8 +94,8 @@ export default function PostPage() {
     loadPosts();
   };
 
-  const handleTogglePublish = async (id: string, isPublished: boolean) => {
-    await togglePostPublish(id, !isPublished);
+  const handleTogglePublish = async (id: string, is_published: boolean) => {
+    await togglePostPublish(id, !is_published);
     loadPosts();
   };
 
@@ -124,10 +125,11 @@ export default function PostPage() {
       <div className="flex items-center space-x-3">
         <select value={selectedTag} onChange={(e) => setSelectedTag(e.target.value)} className="border p-2">
           <option value="">Seleccionar etiqueta</option>
-          {allTags.map((tag, index) => (
-            <option key={index} value={tag}>{tag}</option>
+          {allTags.map((tag) => (
+            <option key={tag.id} value={tag.id}>{tag.name}</option>
           ))}
         </select>
+
         <Button onClick={handleFilterByTag} className="bg-blue-500 hover:bg-blue-600">Filtrar</Button>
       </div>
 
@@ -137,18 +139,21 @@ export default function PostPage() {
           <Card key={post.id}>
             <CardHeader>
               <CardTitle>{post.title}</CardTitle>
-              <p className="text-sm text-gray-500">Autor: {post.author} | {new Date(post.created_at).toLocaleDateString()}</p>
+              <p className="text-sm text-gray-500">Autor: {post.author} | {new Date(post.published_at).toLocaleDateString()}</p>
             </CardHeader>
             <CardContent>
               <p>{post.content}</p>
               <p className="text-gray-600 mt-2">Etiquetas: {post.tags.join(", ")}</p>
-              <p className="mt-2 font-bold">Calificación promedio: {post.rating || "Aún no calificado"}</p>
+              <p className="mt-2 font-bold">
+                Calificación promedio: {post.rating ?? "Aún no calificado"}
+              </p>
+
 
               <div className="flex space-x-2 mt-4">
                 <Button onClick={() => setPostId(post.id)} className="bg-yellow-500 hover:bg-yellow-600">Editar</Button>
-                <Button onClick={() => handleTogglePublish(post.id, post.isPublished)}
-                  className={post.isPublished ? "bg-gray-500 hover:bg-gray-600" : "bg-green-500 hover:bg-green-600"}>
-                  {post.isPublished ? "Dépublier" : "Publicar"}
+                <Button onClick={() => handleTogglePublish(post.id, post.is_published)}
+                  className={post.is_published ? "bg-gray-500 hover:bg-gray-600" : "bg-green-500 hover:bg-green-600"}>
+                  {post.is_published ? "Dépublier" : "Publicar"}
                 </Button>
                 <Button onClick={() => handleDeletePost(post.id)} className="bg-red-500 hover:bg-red-600">Eliminar</Button>
               </div>

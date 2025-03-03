@@ -37,8 +37,8 @@ export async function getPostsByTag(tagId: string) {
   return response.data;
 }
 
-export async function togglePostPublish(postId: string, isPublished: boolean) {
-    const response = await api.put(`/posts/${postId}`, { published: isPublished });
+export async function togglePostPublish(postId: string, is_published: boolean) {
+    const response = await api.put(`/posts/${postId}`, { published: is_published });
     return response.data;
   }
   

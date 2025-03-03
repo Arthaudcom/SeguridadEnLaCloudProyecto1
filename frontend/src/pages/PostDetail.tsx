@@ -8,11 +8,11 @@ interface Post {
     title: string;
     content: string;
     author: string;
-    publishedAt: string;
+    published_at: string;
     created_at: string;
     tags: string[];
     rating?: number;
-    isPublished: boolean;
+    is_published: boolean;
 }
 
 export default function PostDetail() {

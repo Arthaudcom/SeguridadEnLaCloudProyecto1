@@ -2,13 +2,23 @@ export interface Post {
     title: string;
     content: string;
     author: string;
-    publishedAt: string;
+    published_at: string;
     tags?: string[];
-    isPublished: boolean;
+    is_published: boolean;
   }
+
+export interface PostCreate {
+  title: string;
+  content: string;
+  author: string;
+  tag_ids: number[];
+  is_published: boolean;
+}
+
   
   export interface Tag {
     name: string;
+    id: number;
   }
   
   export interface User {

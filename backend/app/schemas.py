@@ -33,19 +33,25 @@ class ResetPasswordRequest(BaseModel):
 class PostCreate(BaseModel):
     title: str
     content: str
-    tags: List[str]
+    author: str               
+    published_at: datetime.datetime    
+    tags: List[str]            
+    is_published: bool
     
 class PostUpdate(BaseModel):
     title: Optional[str]
     content: Optional[str]
-    tag_ids: Optional[List[int]]
+    author: Optional[str]
+    published_at: Optional[datetime.datetime]
+    tags: Optional[List[str]]  
     is_published: Optional[bool]
 
 class PostResponse(BaseModel):
     id: int
     title: str
     content: str
-    created_at: datetime.datetime
+    author: str
+    published_at: datetime.datetime
     is_published: bool
     tags: List[str]
 
