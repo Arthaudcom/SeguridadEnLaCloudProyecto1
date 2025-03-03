@@ -140,15 +140,34 @@ def update_post(
 def delete_post(post_id: int, token: str, db: Session = Depends(get_db)):
     payload = verify_token(token)
     if not payload:
-        raise HTTPException(status_code=401, detail="Token inválido o expirado")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token inválido o expirado"
+        )
 
     user = db.query(User).filter(User.email == payload["sub"]).first()
-    post = db.query(Post).filter(Post.id == post_id, Post.author_id == user.id).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuario no válido"
+        )
+
+    post = db.query(Post).filter(Post.id == post_id).first()
     if not post:
-        raise HTTPException(status_code=404, detail="Publicación no encontrada o no tienes permisos")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Publicación no encontrada"
+        )
+
+    if post.author_id != user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permiso para eliminar esta publicación"
+        )
 
     db.delete(post)
     db.commit()
+
     return {"message": "Publicación eliminada correctamente"}
 
 @router.get("/", response_model=List[PostResponse])

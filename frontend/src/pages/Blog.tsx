@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPost, getPosts, updatePost, deletePost, getPostsByTag, togglePostPublish } from "../services/postService";
-import { getTags, assignTagsToPost } from "../services/tagService";
+import { getTags } from "../services/tagService";
 import { ratePost, getAverageRating } from "../services/ratingService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,28 +38,33 @@ export default function PostPage() {
   }, [currentPage]);
 
   const loadPosts = async () => {
+    try {
+      // Récupère les posts de la page courante
+      const data = await getPosts(currentPage, 10); // 10 posts par page
+      
+      // Première initialisation du tableau
+      const initialPosts = data.map((post: Post) => ({
+        ...post,
+        rating: null,
+        is_published: post.is_published ?? false,
+      }));
+      setPosts(initialPosts);
 
-    const data = await getPosts(currentPage, 10); // 10 posts par page
-  
-    const initialPosts = data.map((post: Post) => ({
-      ...post,
-      rating: null,
-      is_published: post.is_published ?? false,
-    }));
-    setPosts(initialPosts);
-
-    const updatedPosts = await Promise.all(
-      data.map(async (post: Post) => {
-        const rating = await getAverageRating(post.id);
-        return {
-          ...post,
-          rating,
-          is_published: post.is_published ?? false,
-        };
-      })
-    );
-  
-    setPosts(updatedPosts);
+      // Récupérer la note moyenne pour chaque post
+      const updatedPosts = await Promise.all(
+        data.map(async (post: Post) => {
+          const rating = await getAverageRating(post.id);
+          return {
+            ...post,
+            rating,
+            is_published: post.is_published ?? false,
+          };
+        })
+      );
+      setPosts(updatedPosts);
+    } catch (error) {
+      console.error("Erreur lors du chargement des posts:", error);
+    }
   };
   
 
@@ -86,9 +91,12 @@ export default function PostPage() {
       is_published: true
     });
 
-    if (tags.length > 0) {
-      await assignTagsToPost(newPost.id, tags);
-    }
+    setTitle("");
+    setContent("");
+    setAuthor("");
+    setTags([]);
+
+    console.log("Publicación creada:", newPost);
     await loadPosts();
   };
 
@@ -100,9 +108,19 @@ export default function PostPage() {
   };
 
   const handleDeletePost = async (id: string) => {
-    await deletePost(id);
-    loadPosts();
+    try {
+      await deletePost(id);
+      loadPosts();
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error((error as { response?: { data?: { detail?: string } } }).response?.data?.detail || error.message);
+      } else {
+        console.error("Unknown error", error);
+      }
+      alert((error as { response?: { data?: { detail?: string } } }).response?.data?.detail || "No autorizado, no eres el dueño de la publicación");
+    }
   };
+  
 
   const handleFilterByTag = async () => {
     if (!selectedTag) return;

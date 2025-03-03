@@ -15,9 +15,11 @@ export async function updatePost(postId: string, postData: Partial<Post>) {
 
 // borra un post
 export async function deletePost(postId: string) {
-  const response = await api.delete(`/posts/${postId}`);
+  const token = localStorage.getItem("token") ?? "";
+  const response = await api.delete(`/posts/${postId}?token=${token}`);
   return response.data;
 }
+
 
 // obtener todos los posts con paginación
 export async function getPosts(page: number = 1, limit: number = 10) {
