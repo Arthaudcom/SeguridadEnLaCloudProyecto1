@@ -38,16 +38,30 @@ export default function PostPage() {
   }, [currentPage]);
 
   const loadPosts = async () => {
-    const data = await getPosts(currentPage, 10); // 10 posts por página
+
+    const data = await getPosts(currentPage, 10); // 10 posts par page
+  
+    const initialPosts = data.map((post: Post) => ({
+      ...post,
+      rating: null,
+      is_published: post.is_published ?? false,
+    }));
+    setPosts(initialPosts);
+
     const updatedPosts = await Promise.all(
-      data.map(async (post: Post) => ({
-        ...post,
-        rating: await getAverageRating(post.id),
-        is_published: post.is_published ?? false,
-      }))
+      data.map(async (post: Post) => {
+        const rating = await getAverageRating(post.id);
+        return {
+          ...post,
+          rating,
+          is_published: post.is_published ?? false,
+        };
+      })
     );
+  
     setPosts(updatedPosts);
   };
+  
 
   const loadTags = async () => {
     const data = await getTags();
@@ -56,11 +70,18 @@ export default function PostPage() {
 
 
   const handleCreatePost = async () => {
+
+    const now = new Date();
+    const bogotaOffset = -5 * 60; // Bogotá est UTC-5 en minutes
+    const bogotaTime = new Date(now.getTime() + bogotaOffset * 60 * 1000);
+    const publishedAt = bogotaTime.toISOString();
+
+
     const newPost = await createPost({
       title,
       content,
       author,
-      published_at: new Date().toISOString(),
+      published_at: publishedAt,
       tags,
       is_published: true
     });
@@ -68,7 +89,7 @@ export default function PostPage() {
     if (tags.length > 0) {
       await assignTagsToPost(newPost.id, tags);
     }
-    loadPosts();
+    await loadPosts();
   };
 
   const handleUpdatePost = async () => {
