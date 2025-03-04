@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter , Routes, Route, Navigate } from "react-router-dom";
 import Blog from "./pages/Blog";
 import Login from "./pages/Login";
 import PostDetail from "./pages/PostDetail";
@@ -9,7 +9,7 @@ export default function AppRoutes() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         {/* Redirecion si conectado */}
         <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
@@ -33,7 +33,7 @@ export default function AppRoutes() {
         />
         <Route path="/posts/:id" element={<PostDetail />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
